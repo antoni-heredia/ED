@@ -1,0 +1,154 @@
+\documentclass[12pt,a4psprt]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{eurosym}
+\usepackage[pdftex]{graphicx}     
+\usepackage{listingsutf8}
+
+\pagestyle{plain}
+\title{\fbox{\fbox{\bf Práctica 1: Eficiencia}}}
+\author{Antonio Jesús Heredia Castillo\\ 2ºA \\ ETS de Ingenierías Informática y de Telecomunicación }
+\date{\today}
+\begin{document}
+%portada
+\maketitle{}
+	
+\begin{abstract}
+En esta practica obtendremos datos sobre el tiempo de ejecucion de distintos algoritmos y como afecta la compilacion al tiempo de ejecución.
+\end{abstract}
+
+
+
+%indice
+\pagebreak
+\tableofcontents
+\pagebreak
+\section{Ejercicio 1: Dependencia del entorno}
+\subsection{Sistema usado}
+Acontinuacion se adjunta una tabla con el hardware usado: \\
+\begin{center}
+\begin{tabular}{|l||r|p{2cm}}
+\hline
+\multicolumn{2}{|c|}{Hardware} \\
+\hline
+CPU & Intel(R) Core(TM) i5-6600 \\
+\hline
+Velocidad de reloj & 3.30GHz \\
+\hline
+Arquitectura & 64bits \\
+\hline
+Memoria RAM & 16GB \\
+\hline
+Tipo de maquina & x86\_64 \\
+\hline
+
+\end{tabular}
+\end{center}
+
+El sistema operativo usado a sido : \textbf{Linux Mint 18.1 Serena}.
+\subsection{Codigo}
+El codigo del programa principal es el siguiente:
+\begin{lstlisting}[language=C++]
+#include <iostream>
+#include <ctime>    // Recursos para medir tiempos
+#include <cstdlib>  // Para generacion de numeros pseudoaleatorios
+using namespace std;
+
+void forma_usar(void){
+	cerr << "Numero de parametro incorrecto" << endl;
+	cerr << "Forma correcta de ejecutar: " << endl;
+	cerr << "ejercicio7_1 tamanio valor_maximo" << endl;
+	exit(1);
+}
+
+//Codigo copiado del PDF de practicas
+void ordenar(int *v, int n) {
+	bool cambio=true;
+	for (int i=0; i<n-1 && cambio; i++) {
+		cambio=false;
+		for (int j=0; j<n-i-1; j++)
+			if (v[j]>v[j+1]) {
+				cambio=true;
+				int aux = v[j];
+				v[j] = v[j+1];
+				v[j+1] = aux;
+			}
+	}
+}
+
+int main(int argc, char * argv[])
+{
+	if (argc!=3)
+		forma_usar();
+	int tam=atoi(argv[1]);     // Tamanio del vector
+	int max=atoi(argv[2]);    // Valor maximo
+	
+	if (tam<=0 || max<=0)
+    	forma_usar();
+  
+	// Generacion del vector aleatorio
+	int *v=new int[tam];       // Reserva de memoria.
+	// Inicializacion del generador de numeros pseudoaleatorios
+	srand(time(0));            
+	for (int i=0; i<tam; i++)  // Recorrer vector
+		v[i] = rand() % max;    // Generar aleatorio [0,max[
+
+	clock_t tini;    // Anotamos el tiempo de inicio
+	tini=clock();
+
+	ordenar(v,tam); // de esta forma forzamos el peor caso
+  
+	clock_t tfin;    // Anotamos el tiempo de finalizaciun
+	tfin=clock();
+
+	// Mostramos resultados
+	cout << tam << "\t" << (tfin-tini)/(double)CLOCKS_PER_SEC 
+	<< endl;
+  
+  delete [] v;     // Liberamos memoria dinamica
+}
+
+\end{lstlisting}
+
+El programa ha sido compilado con la orden:
+\begin{verbatim}
+$g++ -O3 -o ejercicio_7_1 ejercicio_7_1.cpp
+\end{verbatim}
+Para obtener los datos he usado un script parecido al del PDF de la practica pero adaptado para la shell de bash. Los datos obtenidos seran los usados para obtener los puntos de la grafica con la que veremos la eficiencia.
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+#Nombre del fichero: ejecucion_ejercicio_7_1.sh
+#Funcion: El script ejecuta el programa de ordenacion para obtener datos de eficiencia
+INICIO=100
+FIN=20000
+INCREMENTO=100
+EJECUTABLE=./ejercicio7_1
+SALIDA=tiempoOrdenacion.dat
+
+i=$INICIO
+echo > $SALIDA
+while [ $i -lt $FIN ];do
+  echo Ejecucion tam = $i
+  $EJECUTABLE $i 10000 >> $SALIDA
+  let i+=$INCREMENTO
+done
+
+
+\end{lstlisting}
+El script se ejecuta de la siguiente manera:
+\begin{verbatim}
+$ ./ejecucion_ejercicio_7_1.sh
+\end{verbatim}
+
+Una vez ejecutado el script obtendremos un fichero llamado \textbf{tiempoOrdenacion.dat} en el cual se encuentra en cada fila, en la primera columna el tamaño de la muestra y en la segunda el tiempo en segundos que ha tardado en realizar la ordenacion.
+\pagebreak
+\\
+Apartir de los datos obtenidos  podemos realizar una grafica para ver si la eficiencia teoria corresponde con la eficiencia empirica.
+\begin{figure}[h]
+\begin{center}
+	\includegraphics[scale=1]{image/grafica_7_1.png}
+\end{center}
+\caption{Grafica ejercicio 7.1}
+
+\end{figure}
+\end{document}
