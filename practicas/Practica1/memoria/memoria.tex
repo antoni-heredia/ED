@@ -110,7 +110,7 @@ int main(int argc, char * argv[])
 
 \end{lstlisting}
 
-El programa ha sido compilado con la orden:
+El programa ha sido compilado con un fichero makefile que contenia la orden:
 \begin{verbatim}
 $g++ -O3 -o ejercicio_7_1 ejercicio_7_1.cpp
 \end{verbatim}
@@ -122,7 +122,7 @@ Para obtener los datos he usado un script parecido al del PDF de la practica per
 INICIO=100
 FIN=20000
 INCREMENTO=100
-EJECUTABLE=./ejercicio7_1
+EJECUTABLE=./bin/ejercicio_7_1
 SALIDA=tiempoOrdenacion.dat
 
 i=$INICIO
@@ -132,7 +132,6 @@ while [ $i -lt $FIN ];do
   $EJECUTABLE $i 10000 >> $SALIDA
   let i+=$INCREMENTO
 done
-
 
 \end{lstlisting}
 El script se ejecuta de la siguiente manera:
