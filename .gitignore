@@ -1,5 +1,8 @@
 ##Carpeta de ejecutables
 **/bin/
+
+##Ficheros .dat
+*.dat
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
