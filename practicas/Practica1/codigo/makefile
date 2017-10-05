@@ -9,9 +9,17 @@ LIB=$(HOME)/lib
 SRC=$(HOME)/src
 
 
-all : $(BIN)/ejercicio_7_1 $(BIN)/ejercicio_7_2 $(BIN)/ejercicio_7_3
+all : $(BIN)/ejercicio_7_1 $(BIN)/ejercicio_7_2 $(BIN)/ejercicio_7_3 $(BIN)/ejercicio_1 $(BIN)/ejercicio_desc
 
 #ejecutables
+$(BIN)/ejercicio_desc : $(SRC)/ejercicio_desc.cpp
+
+	g++ -O3  --std=c++11 -o $(BIN)/ejercicio_desc $(SRC)/ejercicio_desc.cpp
+
+$(BIN)/ejercicio_1 : $(SRC)/ejercicio_1.cpp
+
+	g++ -O3 -o $(BIN)/ejercicio_1 $(SRC)/ejercicio_1.cpp
+
 $(BIN)/ejercicio_7_1 : $(SRC)/ejercicio_7_1.cpp
 
 	g++ -O3 -o $(BIN)/ejercicio_7_1 $(SRC)/ejercicio_7_1.cpp

@@ -12,6 +12,6 @@ i=$INICIO
 echo > $SALIDA
 while [ $i -lt $FIN ];do
   echo Ejecución tam = $i
-  $EJECUTABLE $i 10000 >> $SALIDA
+  $EJECUTABLE $i 100 >> $SALIDA
   let i+=$INCREMENTO
 done

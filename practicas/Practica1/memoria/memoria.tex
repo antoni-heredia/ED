@@ -2,7 +2,7 @@
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{eurosym}
-\usepackage[pdftex]{graphicx}     
+\usepackage[pdftex]{graphicx}
 \usepackage{listings}
 
 \lstset{literate=
@@ -38,9 +38,8 @@ En esta practica obtendremos datos sobre el tiempo de ejecucion de distintos alg
 \pagebreak
 \tableofcontents
 \pagebreak
-\section{Ejercicio 1: Dependencia del entorno}
-\subsection{Sistema usado}
-Acontinuacion se adjunta una tabla con el hardware usado: \\
+\section{Sistema usado}
+Acontinuacion se adjunta una tabla con el hardware usado en todas las mediciones de tiempo: \\
 \begin{center}
 \begin{tabular}{|l||r|p{2cm}}
 \hline
@@ -61,6 +60,111 @@ Tipo de maquina & x86\_64 \\
 \end{center}
 
 El sistema operativo usado a sido : \textbf{Linux Mint 18.1 Serena}.
+\pagebreak
+\section{Ejercicio 1: Ordenación de la burbuja}
+\subsection{Codigo}
+El codigo del programa principal es el siguiente:
+\begin{lstlisting}[language=C++]
+#include <iostream>
+#include <ctime>    // Recursos para medir tiempos
+#include <cstdlib>  // Para generación de números pseudoaleatorios
+
+using namespace std;
+
+void forma_usar(void){
+	cerr << "Numero de parametro incorrecto" << endl;
+	cerr << "Forma correcta de ejecutar: " << endl;
+	cerr << "ejercicio7_1 tamaño valor_maximo" << endl;
+	exit(1);
+}
+
+//Codigo copiado del PDF de practicas
+void ordenar(int *v, int n) {
+	for (int i=0; i<n-1; i++)
+		for (int j=0; j<n-i-1; j++)
+			if (v[j]>v[j+1]) {
+			int aux = v[j];
+			v[j] = v[j+1];
+			v[j+1] = aux;
+		}
+}
+
+int main(int argc, char * argv[])
+{
+  
+	if (argc!=3)
+		forma_usar();
+	int tam=atoi(argv[1]);     // Tamaño del vector
+	int max=atoi(argv[2]);    // Valor máximo
+	
+	if (tam<=0 || max<=0)
+    	forma_usar();
+  
+	// Generación del vector aleatorio
+	int *v=new int[tam];       // Reserva de memoria
+	srand(time(0));            // Inicialización del generador de números pseudoaleatorios
+	for (int i=0; i<tam; i++)  // Recorrer vector
+		v[i] = rand() % max;    // Generar aleatorio [0,max[
+
+	clock_t tini;    // Anotamos el tiempo de inicio
+	tini=clock();
+
+	ordenar(v,tam); // de esta forma forzamos el peor caso
+  
+	clock_t tfin;    // Anotamos el tiempo de finalización
+	tfin=clock();
+
+	// Mostramos resultados
+	cout << tam << "\t" << (tfin-tini)/(double)CLOCKS_PER_SEC << endl;
+  
+  delete [] v;     // Liberamos memoria dinámica
+}
+\end{lstlisting}
+\subsection{Eficiencia teorica}
+La eficiencia teorica de la ordenacion burbuja podemos decir que es de:\\
+$Eficiencia=\frac{n^{2}-2}{2}$
+\pagebreak
+\subsection{Representacion grafica}
+La representacion de la eficiencia empirica de la ordenacion seria:
+\begin{figure}[h]
+\begin{center}
+	\includegraphics[scale=1]{image/grafica_1_sin_funcion.png}
+\end{center}
+\end{figure}
+\\
+En el siguiente grafico podemos ver como la eficiencia teorica
+$f(x)=\frac{x^{2}-2}{2}$ junto a la eficiencia empirica.
+\begin{figure}[h]
+\begin{center}
+	\includegraphics[scale=1]{image/grafica_1.png}
+\end{center}
+\end{figure}
+\\
+Con la eficiencia teorica sin ajustar, no se puede ver bien la curva de la eficiencia empirica.
+\pagebreak
+\section{Ejercicio 2: Ajuste en la ordenación de la burbuja}
+Usando la herramient fit de gnuplot podemos ajustar los valores de una funcion para hacer que la eficiencia teorica conrresponda con la eficiencia empirica.
+Para ello realizmos lo siguiente:
+\begin{verbatim}
+g(x) = a*x**2+b*x+c
+fit g(x) 'tiempo_ordenacion_burbuja.data' via a,b,c
+\end{verbatim}
+Gnuplot ajustara g(x) a los tiempos obtenidos empiricamente y nos devuelve que $a=1.31596e-09$ , $b=-2.95575e-06$ y $c=0.00357733$. Cuando hagmamos un plot de la grafica y de g(x) conjuntamente obtenemos:
+\begin{figure}[h]
+\begin{center}
+	\includegraphics[scale=1]{image/grafica_2.png}
+\end{center}
+\end{figure}
+\pagebreak
+\section{Ejercicio 3: Problemas de precisión}
+\subsection{Explique qué hace este algoritmo}
+Consite en la busqueda de un elemento en un vector. Para ello el vector debe estar previamente ordenado.
+El algoritmo divide el vector en dos partes, mira el elemento del medio, si el elemento a buscar es menor que el del medio, se queda con la parte izquierda del vector,
+si es mayor, se queda con la derecha y si fuera igual, ya habria encontrado la posicion del elemento. Esto se ejecuta hasta que se encuentre el elemento.
+\subsection{Calcule su eficiencia teórica}
+Debido a que cada vez  se divide entre dos la region donde buscar, creo que la eficiencia teoria del algoritmo sera de \textbf{O(log(n))} .
+\section{Ejercicio 7.1: Dependencia del entorno}
+
 \subsection{Codigo}
 El codigo del programa principal es el siguiente:
 \begin{lstlisting}[language=C++]
@@ -164,29 +268,8 @@ Apartir de los datos obtenidos  podemos realizar una grafica para ver si la efic
 \\
 Gracias a gnuplot podemos obtener el ajuste para a y b en f(x) para los datos obtenidos.
 He obtenido que $a=-2.32*10^{-9}$ y $b=-0.0079$
-\section{Ejercicio 2: Multiplicación matricial}
-\subsection{Sistema usado}
-Acontinuacion se adjunta una tabla con el hardware usado: \\
-\begin{center}
-\begin{tabular}{|l||r|p{2cm}}
-\hline
-\multicolumn{2}{|c|}{Hardware} \\
-\hline
-CPU & Intel(R) Core(TM) i5-6600 \\
-\hline
-Velocidad de reloj & 3.30GHz \\
-\hline
-Arquitectura & 64bits \\
-\hline
-Memoria RAM & 16GB \\
-\hline
-Tipo de maquina & x86\_64 \\
-\hline
+\section{Ejercicio 7.2: Multiplicación matricial}
 
-\end{tabular}
-\end{center}
-
-El sistema operativo usado a sido : \textbf{Linux Mint 18.1 Serena}.
 \subsection{Codigo}
 El codigo del programa principal es el siguiente:
 \begin{lstlisting}[language=C++]
