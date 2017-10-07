@@ -1,8 +1,6 @@
 #include <iostream>
-#include <ctime>
-#include <ratio>
-#include <chrono>
-
+#include <ctime>    // Recursos para medir tiempos
+#include <cstdlib>  // Para generación de números pseudoaleatorios
 
 using namespace std;
 
@@ -17,7 +15,7 @@ int operacion(int *v, int n, int x, int inf, int sup) {
       inf = med+1;
     else
       sup = med-1;
- }
+  }
   if (enc) 
     return med;
   else 
@@ -34,7 +32,6 @@ void sintaxis()
 
 int main(int argc, char * argv[])
 {
-	using namespace std::chrono;
   // Lectura de parámetros
   if (argc!=2)
     sintaxis();
@@ -48,18 +45,18 @@ int main(int argc, char * argv[])
   for (int i=0; i<tam; i++)  // Recorrer vector
     v[i] = rand() % tam;
   
-	high_resolution_clock::time_point t1 = high_resolution_clock::now();
-
+  clock_t tini;    // Anotamos el tiempo de inicio
+  tini=clock();
 
   // Algoritmo a evaluar
-  operacion(v,tam,tam+1,0,tam-1);
+  for(int x = 0; x < 10000; x++)
+    operacion(v,tam,tam+1,0,tam-1);
   
-    high_resolution_clock::time_point t2 = high_resolution_clock::now();
-  duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
-
+  clock_t tfin;    // Anotamos el tiempo de finalización
+  tfin=clock();
 
   // Mostramos resultados
-  cout << tam << "\t" << time_span.count() << endl;
+  cout << tam << "\t" << (tfin-tini)/(double)CLOCKS_PER_SEC/10000 << endl;
   
   delete [] v;     // Liberamos memoria dinámica
 }

@@ -25,19 +25,17 @@ void ordenar(int *v, int n) {
 int main(int argc, char * argv[])
 {
   
-	if (argc!=3)
+	if (argc!=2)
 		forma_usar();
 	int tam=atoi(argv[1]);     // Tamaño del vector
-	int max=atoi(argv[2]);    // Valor máximo
 	
-	if (tam<=0 || max<=0)
+	if (tam<=0)
     	forma_usar();
   
 	// Generación del vector aleatorio
 	int *v=new int[tam];       // Reserva de memoria
-	srand(time(0));            // Inicialización del generador de números pseudoaleatorios
 	for (int i=0; i<tam; i++)  // Recorrer vector
-		v[i] = rand() % max;    // Generar aleatorio [0,max[
+		v[i] =i;    // ordenados
 
 	clock_t tini;    // Anotamos el tiempo de inicio
 	tini=clock();

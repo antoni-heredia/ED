@@ -4,6 +4,7 @@
 \usepackage{eurosym}
 \usepackage[pdftex]{graphicx}
 \usepackage{listings}
+\usepackage{bookmark}
 
 \lstset{literate=
   {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
@@ -36,10 +37,32 @@ En esta practica obtendremos datos sobre el tiempo de ejecucion de distintos alg
 
 %indice
 \pagebreak
-\tableofcontents
+\tableofcontents                % Level 0 (chapter)
 \pagebreak
 \section{Sistema usado}
-Acontinuacion se adjunta una tabla con el hardware usado en todas las mediciones de tiempo: \\
+Para los ejercicios 1, 2, 3, 4 y 5 se ha usado el siguiente hardware:
+\begin{center}
+\begin{tabular}{|l||r|p{2cm}}
+\hline
+\multicolumn{2}{|c|}{Hardware} \\
+\hline
+CPU & Intel(R) Core(TM) i3-2310M\\
+\hline
+Velocidad de reloj & 2.10GHz \\
+\hline
+Arquitectura & 64bits \\
+\hline
+Memoria RAM & 5820 MiB \\
+\hline
+Tipo de maquina & x86\_64 \\
+\hline
+
+\end{tabular}
+\end{center}
+
+El sistema operativo usado a sido : \textbf{elementary OS Loki}.\\
+
+Acontinuacion se adjunta una tabla con el hardware usado para los ejercicio 7.1, 7.2: \\
 \begin{center}
 \begin{tabular}{|l||r|p{2cm}}
 \hline
@@ -59,7 +82,8 @@ Tipo de maquina & x86\_64 \\
 \end{tabular}
 \end{center}
 
-El sistema operativo usado a sido : \textbf{Linux Mint 18.1 Serena}.
+El sistema operativo usado a sido : \textbf{Linux Mint 18.1 Serena}.\\
+Todos lo programas han sido compilados con g++ usando un nivel de optimizacion de 3.
 \pagebreak
 \section{Ejercicio 1: Ordenación de la burbuja}
 \subsection{Codigo}
@@ -163,8 +187,116 @@ El algoritmo divide el vector en dos partes, mira el elemento del medio, si el e
 si es mayor, se queda con la derecha y si fuera igual, ya habria encontrado la posicion del elemento. Esto se ejecuta hasta que se encuentre el elemento.
 \subsection{Calcule su eficiencia teórica}
 Debido a que cada vez  se divide entre dos la region donde buscar, creo que la eficiencia teoria del algoritmo sera de \textbf{O(log(n))} .
-\section{Ejercicio 7.1: Dependencia del entorno}
 
+\subsection{Calcule su eficiencia empirica}
+Cuando se visualiza la eficiencia empirica podemos ver que todos los tados estan en el (0.0). Esto se debe a que el tiempo de ejecucion es tan pequeño que no lo podemos ni visualizar.\\ 
+La solucion a este problema pasa por ejecutar el mismo algoritmo muchas veces y luego dividir el tiempo entre las veces que se ha ejecutado. En mi caso he ejecutado el algoritmo 10000 veces. Esto se podra observar en la siguiente seccion.\\
+En la grafica podemos observar que los tiempos obtenidos se encuentran de forma escalonada. Esto se debe a la falta de precision a la hora de coger los datos. En este caso, f(x) no se consigue ajustar tan bien a los tiempos obtenidos, aunque si se puede observar que los datos si siguen la tendencia logaritmica.
+\begin{figure}[h]
+\begin{center}
+	\includegraphics[scale=1]{image/grafica_3.png}
+\end{center}
+\end{figure}
+\pagebreak
+\subsection{Codigo}
+\begin{lstlisting}{language=C++}
+#include <iostream>
+#include <ctime>    // Recursos para medir tiempos
+#include <cstdlib>  // Para generación de números pseudoaleatorios
+
+using namespace std;
+
+int operacion(int *v, int n, int x, int inf, int sup) {
+  int med;
+  bool enc=false;
+  while ((inf<sup) && (!enc)) {
+    med = (inf+sup)/2; 
+    if (v[med]==x) 
+      enc = true;
+    else if (v[med] < x) 
+      inf = med+1;
+    else
+      sup = med-1;
+  }
+  if (enc) 
+    return med;
+  else 
+    return -1;
+}
+
+void sintaxis()
+{
+  cerr << "Sintaxis:" << endl;
+  cerr << "  TAM: Tamaño del vector (>0)" << endl;
+  cerr << "Se genera un vector de tamaño TAM con elementos aleatorios" << endl;
+  exit(EXIT_FAILURE);
+}
+
+int main(int argc, char * argv[])
+{
+  // Lectura de parámetros
+  if (argc!=2)
+    sintaxis();
+  int tam=atoi(argv[1]);     // Tamaño del vector
+  if (tam<=0)
+    sintaxis();
+  
+  // Generación del vector aleatorio
+  int *v=new int[tam];       // Reserva de memoria
+  srand(time(0));            // Inicialización del generador de números pseudoaleatorios
+  for (int i=0; i<tam; i++)  // Recorrer vector
+    v[i] = rand() % tam;
+  
+  clock_t tini;    // Anotamos el tiempo de inicio
+  tini=clock();
+
+  // Algoritmo a evaluar
+  for(int x = 0; x < 10000; x++) // Se realiza 10000 para obtener tiempos adecuados
+    operacion(v,tam,tam+1,0,tam-1);
+  
+  clock_t tfin;    // Anotamos el tiempo de finalización
+  tfin=clock();
+
+  // Mostramos resultados
+  cout << tam << "\t" << (tfin-tini)/(double)CLOCKS_PER_SEC/10000 << endl;
+  
+  delete [] v;     // Liberamos memoria dinámica
+}
+
+\end{lstlisting}
+\section{Ejercicio 4: Mejor y peor caso}
+Para el peor caso posible lo que he realizado es llenar el vector de la siguiente forma:
+\begin{lstlisting}
+	int cont_inverso = tam;
+	for (int i=0; i<tam; i++){
+		v[i] = cont_inverso;    // ordenados de forma inversa
+		cont_inverso--;
+	}  // Recorrer vector
+
+\end{lstlisting}
+Y para obtener el mejor caso posible lo he realizado asi:
+\begin{lstlisting}
+
+	for (int i=0; i<tam; i++)
+		v[i] = i;    // ordenados
+\end{lstlisting}
+La grafica que obtenemos al ejecutar los diferentes codigos es:
+\begin{figure}[h]
+\begin{center}
+	\includegraphics[scale=1]{image/grafica_4.png}
+\end{center}
+\end{figure}
+\section{Ejercicio 5: Dependencia de la implementacion}
+En la implementacion del algoritmo burbuja que nos dan en este ejercicio y suponiendo que nos encontramos en el mejor caso posible. El algoritmo tendra una eficiencia de \textbf{O(n)}.
+\\Esto se debe a que solo realizara una pasada al vector, porque cuando en la primera pasada, no haya realizado ningun cambio, no volvera a relizar ninguna pasada mas el bucle. Consiguiendo asi una eficiencia lineal.
+\begin{figure}[h]
+\begin{center}
+	\includegraphics[scale=1]{image/grafica_5.png}
+\end{center}
+\end{figure}
+\\
+El ejercicio 3,4,5 los he realizado en un PC con pocos recursos y por ello, a la hora de recoger los datos, no he obtenido siempre buenos resultados y por ello creo que la f(x) no se ajusta adecuadamente a la linea de puntos. Pero si que se puede observar que si siguen la misma tendencia.
+\section{Ejercicio 7.1: Dependencia del entorno}
 \subsection{Codigo}
 El codigo del programa principal es el siguiente:
 \begin{lstlisting}[language=C++]
@@ -229,34 +361,7 @@ int main(int argc, char * argv[])
 
 \end{lstlisting}
 
-El programa ha sido compilado con un fichero makefile que contenia la orden:
-\begin{verbatim}
-$g++ -O3 -o ejercicio_7_1 ejercicio_7_1.cpp
-\end{verbatim}
-Para obtener los datos he usado un script parecido al del PDF de la practica pero adaptado para la shell de bash. Los datos obtenidos seran los usados para obtener los puntos de la grafica con la que veremos la eficiencia.
-\begin{lstlisting}[language=bash]
-#!/bin/bash
-#Nombre del fichero: ejecucion_ejercicio_7_1.sh
-#Funcion: El script ejecuta el programa de ordenacion para obtener datos de eficiencia
-INICIO=100
-FIN=20000
-INCREMENTO=100
-EJECUTABLE=./bin/ejercicio_7_1
-SALIDA=tiempoOrdenacion.dat
-
-i=$INICIO
-echo > $SALIDA
-while [ $i -lt $FIN ];do
-  echo Ejecucion tam = $i
-  $EJECUTABLE $i 10000 >> $SALIDA
-  let i+=$INCREMENTO
-done
-
-\end{lstlisting}
-
-Una vez ejecutado el script obtendremos un fichero llamado \textbf{tiempoOrdenacion.dat} en el cual se encuentra en cada fila, en la primera columna el tamaño de la muestra y en la segunda el tiempo en segundos que ha tardado en realizar la ordenacion.
 \pagebreak
-\\
 Apartir de los datos obtenidos  podemos realizar una grafica para ver si la eficiencia teoria que en este caso seria O($n^{2}$) corresponde con la eficiencia empirica. Donde la funcion tendria la siguiente forma: \textbf{$f(x)=a*x^{2}+b $}
 \begin{figure}[h]
 \begin{center}
@@ -361,34 +466,6 @@ int main(int argc, char * argv[])
 }
 
 \end{lstlisting}
-
-El programa ha sido compilado con un fichero makefile que contenia la orden:
-\begin{verbatim}
-$g++ -O3 -o ejercicio_7_2 ejercicio_7_2.cpp
-\end{verbatim}
-\pagebreak
-Para obtener los datos he usado un script. Los datos obtenidos seran los usados para obtener los puntos de la grafica con la que veremos la eficiencia.
-\begin{lstlisting}[language=bash]
-#!/bin/bash
-#Nombre del fichero: ejecucion_ejercicio_7_1.sh
-#Funcion: El script ejecuta el programa de ordenacion 
-#	para obtener datos de eficiencia
-INICIO=100
-FIN=3000
-INCREMENTO=100
-EJECUTABLE=./bin/ejercicio_7_2
-SALIDA=tiempoMultiplicacion.dat
-
-make
-i=$INICIO
-echo > $SALIDA
-while [ $i -lt $FIN ];do
-  echo Ejecución tam = $i
-  $EJECUTABLE $i $FIN >> $SALIDA
-  let i+=$INCREMENTO
-done
-
-\end{lstlisting}
 \pagebreak
 En este caso la eficiencia teorica seria O($n^{3}$) y por lo tanto no se puede ajustar correctamente con una funcion del estilo: \textbf{$f(x)=a*x^{2}+b $}.
 \begin{figure}[h]
@@ -408,7 +485,7 @@ En este caso la eficiencia teorica seria O($n^{3}$) y por lo tanto no se puede a
 \caption{Grafica ejercicio 7.2 cubica}
 
 \end{figure}
-Gracias a gnuplot podemos obtener el ajuste para a y b en f(x) para los datos obtenidos.
-He obtenido que $a=$ y $b=$
+
+
 
 \end{document}

@@ -9,7 +9,7 @@ set salida = tiempos_ordenacion_burbuja.dat
 echo > $salida
 while ( $i <= $fin )
   echo Ejecución tam = $i
-  echo `./{$ejecutable} $i 100` >> $salida
+  echo `./{$ejecutable} $i $i` >> $salida
   @ i += $incremento
 end
 echo "fin"
